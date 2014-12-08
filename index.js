@@ -395,7 +395,7 @@ Browserify.prototype._createDeps = function (opts) {
         }
         return true;
     };
-    mopts.resolve = function (id, parent, cb) {
+    mopts.resolve = mopts.resolve || (function (id, parent, cb) {
         if (self._ignore.indexOf(id) >= 0) return cb(null, paths.empty, {});
         
         bresolve(id, parent, function (err, file, pkg) {
@@ -426,7 +426,7 @@ Browserify.prototype._createDeps = function (opts) {
             }
             cb(err, file, pkg);
         });
-    };
+    });
     
     if (opts.builtins === false) {
         mopts.modules = {};
