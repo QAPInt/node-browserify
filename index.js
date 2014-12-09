@@ -361,7 +361,8 @@ Browserify.prototype._createDeps = function (opts) {
     var self = this;
     var mopts = copy(opts);
     var basedir = defined(opts.basedir, process.cwd());
-    
+    var resolver = defined(opts.resolve, bresolve);
+
     mopts.extensions = [ '.js', '.json' ].concat(mopts.extensions || []);
     self._extensions = mopts.extensions;
     
@@ -395,10 +396,10 @@ Browserify.prototype._createDeps = function (opts) {
         }
         return true;
     };
-    mopts.resolve = mopts.resolve || (function (id, parent, cb) {
+    mopts.resolve = function (id, parent, cb) {
         if (self._ignore.indexOf(id) >= 0) return cb(null, paths.empty, {});
         
-        bresolve(id, parent, function (err, file, pkg) {
+        resolver(id, parent, function (err, file, pkg) {
             if (file && self._ignore.indexOf(file) >= 0) {
                 return cb(null, paths.empty, {});
             }
@@ -426,7 +427,7 @@ Browserify.prototype._createDeps = function (opts) {
             }
             cb(err, file, pkg);
         });
-    });
+    };
     
     if (opts.builtins === false) {
         mopts.modules = {};
